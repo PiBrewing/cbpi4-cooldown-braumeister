@@ -102,7 +102,7 @@ class CooldownStepBM(CBPiStep):
             def func(x, a, c, d):
                 return a*np.exp(-c*x)+d
             
-            popt, pcov = curve_fit(func, data.index, data.temp, p0=(0, 0.1, 10), maxfev=5000)
+            popt, pcov = curve_fit(func, data.index, data.temp, p0=(data.temp[0], 0.1, 10), maxfev=5000)
 
             print("Exponential function coefficients:")
             print(popt)

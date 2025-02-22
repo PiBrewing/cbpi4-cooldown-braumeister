@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='cbpi4-cooldown-braumeister',
-      version='0.0.1.a2',
+      version='0.0.1.a3',
       description='CraftBeerPi Plugin',
       author='',
       author_email='',
