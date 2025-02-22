@@ -77,7 +77,6 @@ class CooldownStepBM(CBPiStep):
             self.timer = Timer(
                 1, on_update=self.on_timer_update, on_done=self.on_timer_done
             )
-        self.start_time = time.time()
         self.temp_array.append(
             self.get_sensor_value(self.props.get("Sensor", None)).get("value")
         )
@@ -103,7 +102,7 @@ class CooldownStepBM(CBPiStep):
             def func(x, a, c, d):
                 return a*np.exp(-c*x)+d
             
-            popt, pcov = curve_fit(func, data.index, data.temp, p0=(0, 0.5, 10), maxfev=5000)
+            popt, pcov = curve_fit(func, data.index, data.temp, p0=(0, 0.1, 10), maxfev=5000)
 
             print("Exponential function coefficients:")
             print(popt)
@@ -125,6 +124,7 @@ class CooldownStepBM(CBPiStep):
             await self.actor_on(self.actor)
         self.summary = "Started: {}".format(timestring.strftime("%H:%M"))
         await self.push_update()
+        self.start_time = time.time()
         while self.running == True:
             current_temp = self.get_sensor_value(self.props.get("Sensor", None)).get(
                 "value"
@@ -161,7 +161,8 @@ class CooldownStepBM(CBPiStep):
                     self.temp_array.append(
                         self.get_sensor_value(self.props.get("Sensor", None)).get("value")
                     )
-                    self.time_array.append(time.time())
+                    self.start_time = time.time()
+                    self.time_array.append(self.start_time())
                     await self.push_update()
 
 
