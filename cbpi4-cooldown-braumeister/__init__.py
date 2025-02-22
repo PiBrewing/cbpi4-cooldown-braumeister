@@ -66,7 +66,7 @@ class CooldownStepBM(CBPiStep):
         self.actor = self.props.get("Actor", None)
         self.target_temp = int(self.props.get("Temp", 0))
         self.Interval = (
-            15  # Interval in minutes on how often cooldown end time is calculated
+            10  # Interval in minutes on how often cooldown end time is calculated
         )
 
         self.cbpi.notify(
