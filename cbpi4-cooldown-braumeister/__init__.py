@@ -121,7 +121,7 @@ class CooldownStepBM(CBPiStep):
 
     async def run(self):
         self.start_time = time.time()
-        self.time_array.append(current_time)
+        self.time_array.append(self.start_time)
         current_temp = self.get_sensor_value(self.props.get("Sensor", None)).get(
                 "value"
             )
