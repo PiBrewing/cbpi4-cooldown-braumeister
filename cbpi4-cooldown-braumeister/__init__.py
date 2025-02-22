@@ -66,7 +66,7 @@ class CooldownStepBM(CBPiStep):
         self.actor = self.props.get("Actor", None)
         self.target_temp = int(self.props.get("Temp", 0))
         self.Interval = (
-            10  # Interval in minutes on how often cooldown end time is calculated
+            15  # First Interval in minutes on how often cooldown end time is calculated
         )
 
         self.cbpi.notify(
@@ -148,6 +148,9 @@ class CooldownStepBM(CBPiStep):
                 data["time"] = pd.to_numeric(data["time"])
                 data.set_index("time", inplace=True)
                 data.index = pd.to_numeric((data.index-data.index[0]))/100
+                self.Interval = (
+                10  # Following intervals in minutes on how often cooldown end time is calculated
+                )
                 self.next_check = time.time() + (self.Interval * 60)
 
                 target_time = await self.calculate_time(data, self.target_temp)
