@@ -119,12 +119,18 @@ class CooldownStepBM(CBPiStep):
         return new_time
 
     async def run(self):
+        self.start_time = time.time()
+        self.time_array.append(current_time)
+        current_temp = self.get_sensor_value(self.props.get("Sensor", None)).get(
+                "value"
+            )
+        self.temp_array.append(current_temp)
         timestring = datetime.fromtimestamp(self.start_time)
         if self.actor is not None:
             await self.actor_on(self.actor)
         self.summary = "Started: {}".format(timestring.strftime("%H:%M"))
         await self.push_update()
-        self.start_time = time.time()
+
         while self.running == True:
             current_temp = self.get_sensor_value(self.props.get("Sensor", None)).get(
                 "value"
