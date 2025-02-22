@@ -61,6 +61,7 @@ class CooldownStepBM(CBPiStep):
             logging.error(f"Numpy Error: {e}")
         self.temp_array = []
         self.time_array = []
+        self.start_time = time.time()
         self.kettle = self.get_kettle(self.props.get("Kettle", None))
         self.actor = self.props.get("Actor", None)
         self.target_temp = int(self.props.get("Temp", 0))
