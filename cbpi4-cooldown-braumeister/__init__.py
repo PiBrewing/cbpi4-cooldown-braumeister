@@ -78,11 +78,6 @@ class CooldownStepBM(CBPiStep):
             self.timer = Timer(
                 1, on_update=self.on_timer_update, on_done=self.on_timer_done
             )
-        self.temp_array.append(
-            self.get_sensor_value(self.props.get("Sensor", None)).get("value")
-        )
-        self.time_array.append(time.time())
-        self.next_check = self.start_time + self.Interval * 60
 
     async def on_stop(self):
         await self.timer.stop()
@@ -108,17 +103,20 @@ class CooldownStepBM(CBPiStep):
 
             log_value = (target_temp - popt[2]) if popt[2] < target_temp else 1
             time = ((np.log((log_value) / popt[0])) / -popt[1])*100
+
+            logging.error(f"Time to reach {target_temp} degrees: {time} seconds")
+            logging.error(f"Start time: {self.start_time}")
+
             new_time = time + self.start_time
 
-            logging.info(f"Time to reach {target_temp} degrees: {datetime.fromtimestamp(new_time)}")
+            logging.error(f"Time to reach {target_temp} degrees: {datetime.fromtimestamp(new_time)}")
         except Exception as e:
             logging.error(f"Failed to calculate time: {e}")
             new_time = None
         return new_time
 
     async def run(self):
-        self.start_time = time.time()
-        timestring = datetime.fromtimestamp(self.start_time)
+        timestring = datetime.fromtimestamp(time.time())
         if self.actor is not None:
             await self.actor_on(self.actor)
         self.summary = "Started: {}".format(timestring.strftime("%H:%M"))
@@ -131,6 +129,7 @@ class CooldownStepBM(CBPiStep):
             await asyncio.sleep(1)
             
         self.start_time = time.time()
+        self.next_check = self.start_time + self.Interval * 60
         self.time_array.append(self.start_time)
         current_temp = self.get_sensor_value(self.props.get("Sensor", None)).get(
                 "value"
