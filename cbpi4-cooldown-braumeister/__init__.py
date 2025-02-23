@@ -83,8 +83,6 @@ class CooldownStepBM(CBPiStep):
         )
         self.time_array.append(time.time())
         self.next_check = self.start_time + self.Interval * 60
-        self.count = 0
-        self.initial_date = None
 
     async def on_stop(self):
         await self.timer.stop()
@@ -110,10 +108,9 @@ class CooldownStepBM(CBPiStep):
 
             log_value = (target_temp - popt[2]) if popt[2] < target_temp else 1
             time = ((np.log((log_value) / popt[0])) / -popt[1])*100
-            logging.error(f"Time to target: {time} seconds")
             new_time = time + self.start_time
 
-            logging.error(f"Time to reach {target_temp} degrees: {datetime.fromtimestamp(new_time)}")
+            logging.info(f"Time to reach {target_temp} degrees: {datetime.fromtimestamp(new_time)}")
         except Exception as e:
             logging.error(f"Failed to calculate time: {e}")
             new_time = None
@@ -146,21 +143,16 @@ class CooldownStepBM(CBPiStep):
             current_temp = self.get_sensor_value(self.props.get("Sensor", None)).get(
                 "value"
             )
-            if self.count == 3:
-                self.temp_array.append(current_temp)
-                current_time = time.time()
-                if self.initial_date == None:
-                    self.initial_date = current_time
-                self.time_array.append(current_time)
-                self.count = 0
+            self.temp_array.append(current_temp)
+            current_time = time.time()
+            self.time_array.append(current_time)
             if time.time() >= self.next_check:
                 data = pd.DataFrame({'time': self.time_array, 'temp': self.temp_array})
                 data["time"] = pd.to_numeric(data["time"])
                 data.set_index("time", inplace=True)
                 data.index = pd.to_numeric((data.index-data.index[0]))/100
-
                 self.next_check = time.time() + (self.Interval * 60)
-
+                data.iloc[::3] 
                 target_time = await self.calculate_time(data, self.target_temp)
                 if target_time is not None:
                     target_timestring = datetime.fromtimestamp(target_time)
@@ -174,21 +166,21 @@ class CooldownStepBM(CBPiStep):
                         ),
                         NotificationType.INFO,
                     )
-                    self.temp_array = []
-                    self.time_array = []
-                    self.temp_array.append(
-                        self.get_sensor_value(self.props.get("Sensor", None)).get("value")
-                    )
-                    self.start_time = time.time()
-                    self.time_array.append(self.start_time)
                     await self.push_update()
+                self.temp_array = []
+                self.time_array = []
+                self.temp_array.append(
+                    self.get_sensor_value(self.props.get("Sensor", None)).get("value")
+                )
+                self.start_time = time.time()
+                self.time_array.append(self.start_time)
+
 
 
             if current_temp <= self.target_temp and self.timer.is_running is not True:
                 self.timer.start()
                 self.timer.is_running = True
 
-            self.count += 1
             await asyncio.sleep(1)
 
         return StepResult.DONE
