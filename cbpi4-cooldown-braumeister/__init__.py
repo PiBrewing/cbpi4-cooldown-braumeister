@@ -66,7 +66,7 @@ class CooldownStepBM(CBPiStep):
         self.actor = self.props.get("Actor", None)
         self.target_temp = int(self.props.get("Temp", 0))
         self.Interval = (
-            15  # First Interval in minutes on how often cooldown end time is calculated
+            10  # Interval in minutes on how often cooldown end time is calculated
         )
 
         self.cbpi.notify(
@@ -121,17 +121,27 @@ class CooldownStepBM(CBPiStep):
 
     async def run(self):
         self.start_time = time.time()
-        self.time_array.append(self.start_time)
-        current_temp = self.get_sensor_value(self.props.get("Sensor", None)).get(
-                "value"
-            )
-        self.temp_array.append(current_temp)
         timestring = datetime.fromtimestamp(self.start_time)
         if self.actor is not None:
             await self.actor_on(self.actor)
         self.summary = "Started: {}".format(timestring.strftime("%H:%M"))
         await self.push_update()
 
+        # Wait for prewait time before starting data collection to have the system stabilized with respect to cooldown activity
+        logging.error("Waiting for prewait time")
+        prewait = 2 # Minutes before data collection starts
+        while time.time() < (self.start_time + (prewait * 60)):
+            await asyncio.sleep(1)
+            
+        self.start_time = time.time()
+        self.time_array.append(self.start_time)
+        current_temp = self.get_sensor_value(self.props.get("Sensor", None)).get(
+                "value"
+            )
+        self.temp_array.append(current_temp)
+        
+        logging.error("Starting data collection")
+        # Start  data collection
         while self.running == True:
             current_temp = self.get_sensor_value(self.props.get("Sensor", None)).get(
                 "value"
@@ -148,9 +158,7 @@ class CooldownStepBM(CBPiStep):
                 data["time"] = pd.to_numeric(data["time"])
                 data.set_index("time", inplace=True)
                 data.index = pd.to_numeric((data.index-data.index[0]))/100
-                self.Interval = (
-                10  # Following intervals in minutes on how often cooldown end time is calculated
-                )
+
                 self.next_check = time.time() + (self.Interval * 60)
 
                 target_time = await self.calculate_time(data, self.target_temp)
