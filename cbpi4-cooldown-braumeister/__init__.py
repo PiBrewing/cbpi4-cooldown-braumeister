@@ -98,18 +98,18 @@ class CooldownStepBM(CBPiStep):
             
             popt, pcov = curve_fit(func, data.index, data.temp, p0=(0, 0.5, 10), maxfev=5000)
 
-            print("Exponential function coefficients:")
-            print(popt)
+            #print("Exponential function coefficients:")
+            #print(popt)
 
             log_value = (target_temp - popt[2]) if popt[2] < target_temp else 1
             time = ((np.log((log_value) / popt[0])) / -popt[1])*100
 
-            logging.error(f"Time to reach {target_temp} degrees: {time} seconds")
-            logging.error(f"Start time: {self.start_time}")
+            logging.info(f"Time to reach {target_temp} degrees: {time} seconds")
+            logging.info(f"Start time: {self.start_time}")
 
             new_time = time + self.start_time
 
-            logging.error(f"Time to reach {target_temp} degrees: {datetime.fromtimestamp(new_time)}")
+            logging.info(f"Time to reach {target_temp} degrees: {datetime.fromtimestamp(new_time)}")
         except Exception as e:
             logging.error(f"Failed to calculate time: {e}")
             new_time = None
