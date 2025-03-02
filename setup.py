@@ -9,11 +9,11 @@ with open(path.join(this_directory, "README.md"), encoding="utf-8") as f:
 
 setup(
     name="cbpi4-cooldown-braumeister",
-    version="0.0.1.a14",
-    description="CraftBeerPi Plugin",
-    author="",
-    author_email="",
-    url="",
+    version="0.0.1",
+    description="CraftBeerPi4 Plugin",
+    author="Alexander Vollkopf",
+    author_email="avollkopf@web.de",
+    url="https://github.com/PiBrewing/cbpi4-cooldown-braumeister",
     include_package_data=True,
     package_data={
         # If any package contains *.txt or *.rst files, include them:
