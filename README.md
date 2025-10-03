@@ -29,4 +29,5 @@ Please have a look at the [Craftbeerpi4 Documentation](https://openbrewing.gitbo
 
 ### Changelog:
 
+- 03.10.25: (0.0.2) Update scipy requirements
 - 02.03.25: (0.0.1) Initial Release

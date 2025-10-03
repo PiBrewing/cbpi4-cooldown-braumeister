@@ -9,7 +9,7 @@ with open(path.join(this_directory, "README.md"), encoding="utf-8") as f:
 
 setup(
     name="cbpi4-cooldown-braumeister",
-    version="0.0.1",
+    version="0.0.2",
     description="CraftBeerPi4 Plugin",
     author="Alexander Vollkopf",
     author_email="avollkopf@web.de",
@@ -21,7 +21,7 @@ setup(
         "cbpi4-cooldown-braumeister": ["*", "*.txt", "*.rst", "*.yaml"],
     },
     packages=["cbpi4-cooldown-braumeister"],
-    install_requires=["scipy==1.15.2"],
+    install_requires=["scipy==1.16.2"],
     long_description=long_description,
     long_description_content_type="text/markdown",
 )
