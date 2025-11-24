@@ -29,5 +29,6 @@ Please have a look at the [Craftbeerpi4 Documentation](https://openbrewing.gitbo
 
 ### Changelog:
 
+- 24.11.25: (0.0.3) Add pyproject.toml file to support pip 25.3+
 - 03.10.25: (0.0.2) Update scipy requirements
 - 02.03.25: (0.0.1) Initial Release
